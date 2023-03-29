@@ -19,7 +19,7 @@ class HasselbladDataset(Dataset):
             transforms.RandomAffine(180,shear=45),
             transforms.RandomHorizontalFlip(),
             transforms.RandomVerticalFlip(),
-            transforms.RandomCrop([200,200]),
+            transforms.RandomCrop([224,224]),
         ])
 
         self.to_tensor = transforms.ToTensor()
