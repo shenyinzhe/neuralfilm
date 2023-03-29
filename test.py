@@ -1,6 +1,9 @@
 import argparse
+import os
+
 import torch
 from tqdm import tqdm
+from torchvision.utils import save_image
 import data_loader.data_loaders as module_data
 import model.loss as module_loss
 import model.metric as module_metric
@@ -14,7 +17,7 @@ def main(config):
     # setup data_loader instances
     data_loader = getattr(module_data, config['data_loader']['type'])(
         config['data_loader']['args']['data_dir'],
-        batch_size=512,
+        batch_size=3,
         shuffle=False,
         validation_split=0.0,
         training=False,
@@ -51,6 +54,14 @@ def main(config):
 
             #
             # save sample images, or do something with output here
+            counter = len(os.listdir("saved/test/"))
+            for j in range(len(data)):
+                save_image(data[j], f'saved/test/img{counter}.png')
+                counter += 1
+                save_image(output[j], f'saved/test/img{counter}.png')
+                counter += 1
+                save_image(target[j], f'saved/test/img{counter}.png')
+                counter += 1
             #
 
             # computing loss, metrics on test set

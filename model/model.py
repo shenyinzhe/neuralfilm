@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torch.hub
 import torch.nn.functional as F
 from base import BaseModel
 
@@ -20,3 +21,12 @@ class MnistModel(BaseModel):
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
+
+
+class UNet(BaseModel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model = torch.hub.load('mateuszbuda/brain-segmentation-pytorch', 'unet', in_channels=3, out_channels=3, init_features=32, pretrained=False)
+
+    def forward(self, x):
+        return self.model(x) + x
