@@ -10,7 +10,7 @@
         "type": "DataLoader",
         "args":{
             "data_dir": "data/Hasselblad",
-            "batch_size": 3,
+            "batch_size": 16,
             "shuffle": true,
             "validation_split": 0.4,
             "num_workers": 2
