@@ -25,7 +25,7 @@ class MnistModel(BaseModel):
         return F.log_softmax(x, dim=1)
 
 class UNet(BaseModel):
-    def __init__(self, in_channels=3, out_channels=1, init_features=32):
+    def __init__(self, in_channels=3, out_channels=3, init_features=32):
         super(UNet, self).__init__()
 
         features = init_features
