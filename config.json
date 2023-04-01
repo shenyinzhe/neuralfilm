@@ -1,5 +1,5 @@
 {
-    "name": "Hasselblad",
+    "name": "NC_split",
     "n_gpu": 1,
 
     "arch": {
@@ -9,8 +9,8 @@
     "data_loader": {
         "type": "DataLoader",
         "args":{
-            "data_dir": "data/Hasselblad",
-            "batch_size": 16,
+            "data_dir": "data/Fujifilm_NC_split",
+            "batch_size": 128,
             "shuffle": true,
             "validation_split": 0.4,
             "num_workers": 2
