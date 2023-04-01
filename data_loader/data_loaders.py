@@ -16,10 +16,8 @@ class DataLoader(BaseDataLoader):
 class HasselbladDataset(Dataset):
     def __init__(self, data_dir):
         self.transform = transforms.Compose([
-            transforms.RandomAffine(180,shear=45),
             transforms.RandomHorizontalFlip(),
             transforms.RandomVerticalFlip(),
-            transforms.RandomCrop([224,224]),
         ])
 
         self.to_tensor = transforms.ToTensor()
