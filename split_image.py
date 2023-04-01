@@ -5,6 +5,30 @@ from tqdm import tqdm
 from PIL import Image
 
 
+# TODO: move to ultils
+def col2image(coldata, imsize, stride):
+    """
+    https://zhuanlan.zhihu.com/p/39361808
+    """
+    patch_size = coldata.shape[1:3]
+    res = np.zeros((imsize[0], imsize[1], 3))
+    w = np.zeros(((imsize[0], imsize[1], 3)))
+    range_y = np.arange(0, imsize[0] - patch_size[0], stride)
+    range_x = np.arange(0, imsize[1] - patch_size[1], stride)
+    if range_y[-1] != imsize[0] - patch_size[0]:
+        range_y = np.append(range_y, imsize[0] - patch_size[0])
+    if range_x[-1] != imsize[1] - patch_size[1]:
+        range_x = np.append(range_x, imsize[1] - patch_size[1])
+    index = 0
+    for y in range_y:
+        for x in range_x:
+            res[y:y + patch_size[0], x:x + patch_size[1]] = res[y:y + patch_size[0], x:x + patch_size[1]] + coldata[
+                index]
+            w[y:y + patch_size[0], x:x + patch_size[1]] = w[y:y + patch_size[0], x:x + patch_size[1]] + 1
+            index = index + 1
+
+    return res / w
+
 def image2cols(image:np.array, patch_size: list, stride:int):
     """
     https://zhuanlan.zhihu.com/p/39361808
