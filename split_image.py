@@ -1,6 +1,7 @@
 import argparse
 import os
 import numpy as np
+from tqdm import tqdm
 from PIL import Image
 
 
@@ -49,7 +50,7 @@ def main(data_dir: str, size: int):
         raise RuntimeError("Dataset exists")
 
     counter = 1
-    for i in images:
+    for i in tqdm(images):
         im = np.array(Image.open(os.path.join(input_dir, i)))
         im = image2cols(im, [size,size], size)
         for j in im:
@@ -58,7 +59,7 @@ def main(data_dir: str, size: int):
             counter += 1
 
     counter = 1
-    for i in target:
+    for i in tqdm(target):
         im = np.array(Image.open(os.path.join(label_dir, i)))
         im = image2cols(im, [size,size], size)
         for j in im:
