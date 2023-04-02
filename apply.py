@@ -16,6 +16,12 @@ from split_image import image2cols, col2image
 from tempfile import TemporaryDirectory
 from torchvision.utils import save_image
 
+# Fix path issue on Windows
+import pathlib
+temp = pathlib.PosixPath
+pathlib.PosixPath = pathlib.WindowsPath
+# Fix path issue on Windows
+
 
 def main(img_path, config):
     with TemporaryDirectory() as dirname:
