@@ -17,11 +17,12 @@
         }
     },
     "optimizer": {
-        "type": "Adam",
+        "type": "SGD",
         "args":{
             "lr": 0.001,
-            "weight_decay": 0,
-            "amsgrad": true
+            "weight_decay": 0.005,
+            "momentum": 0.99,
+            "nesterov": true
         }
     },
     "loss": "mse_loss",
