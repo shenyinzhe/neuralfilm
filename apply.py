@@ -3,6 +3,7 @@ import os
 import torch
 import numpy as np
 from tqdm import tqdm
+from empatches import EMPatches
 
 import data_loader.data_loaders as module_data
 import model.model as module_arch
@@ -25,9 +26,11 @@ def main(img_path, config):
 
         im = np.array(Image.open(img_path))
         imsize = im.shape[:2]
-        # TODO: So far the model is trained with 112x112 patches. Config  it in the future
+        # TODO: So far the model is trained with 112x112 patches. Config it in the future
         patch_length = 112
-        im = image2cols(im, [patch_length,patch_length], patch_length)
+        emp = EMPatches()
+        im, indices = emp.extract_patches(im, patchsize=patch_length, overlap=0.2)
+        im = np.stack(im,axis=0)
         counter = 0
         for patch in im:
             patch = Image.fromarray(patch)
@@ -100,7 +103,7 @@ def main(img_path, config):
         patches_np = np.stack(patches_np)
 
     # recover the image from patches
-    img = col2image(patches_np, imsize, patch_length).astype(np.uint8)
+    img = emp.merge_patches(patches_np, indices, mode='avg').astype(np.uint8)
     img = Image.fromarray(img)
     dirname = os.path.dirname(img_path)
     filename = os.path.basename(img_path).split(".")[0]
