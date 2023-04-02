@@ -12,7 +12,6 @@ import model.metric as module_metric
 
 from PIL import Image
 from parse_config import ConfigParser
-from split_image import image2cols, col2image
 from tempfile import TemporaryDirectory
 from torchvision.utils import save_image
 

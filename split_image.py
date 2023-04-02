@@ -5,7 +5,7 @@ from tqdm import tqdm
 from PIL import Image
 
 
-# TODO: move to ultils
+# TODO: use empatches
 def col2image(coldata, imsize, stride):
     """
     https://zhuanlan.zhihu.com/p/39361808
