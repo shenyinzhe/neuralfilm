@@ -32,9 +32,9 @@ def main(img_path, config):
         im = np.array(Image.open(img_path))
         imsize = im.shape[:2]
         # TODO: So far the model is trained with 112x112 patches. Config it in the future
-        patch_length = 112
+        patch_length = 224
         emp = EMPatches()
-        im, indices = emp.extract_patches(im, patchsize=patch_length, overlap=0.2)
+        im, indices = emp.extract_patches(im, patchsize=patch_length, overlap=0.1)
         im = np.stack(im,axis=0)
         counter = 0
         for patch in im:
@@ -50,7 +50,7 @@ def main(img_path, config):
         data_loader = getattr(module_data, config['data_loader']['type'])(
             dirname,
             augment=False,
-            batch_size=128,
+            batch_size=64,
             shuffle=False,
             validation_split=0.0,
             training=False,
