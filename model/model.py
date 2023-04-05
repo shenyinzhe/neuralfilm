@@ -8,7 +8,7 @@ from collections import OrderedDict
 
 class UNet(BaseModel):
     """
-    From https://github.com/mateuszbuda/brain-segmentation-pytorch by mateuszbuda
+    Taken and modified from https://github.com/mateuszbuda/brain-segmentation-pytorch by mateuszbuda
     """
 
     def __init__(self, in_channels=3, out_channels=3, init_features=32):
@@ -67,7 +67,7 @@ class UNet(BaseModel):
         dec1 = self.upconv1(dec2)
         dec1 = torch.cat((dec1, enc1), dim=1)
         dec1 = self.decoder1(dec1)
-        return torch.tanh(self.conv(dec1)) + x
+        return torch.tanh(self.conv(dec1)) + x  # modified to learn color difference
 
     @staticmethod
     def _block(in_channels, features, name):
@@ -81,7 +81,7 @@ class UNet(BaseModel):
                             out_channels=features,
                             kernel_size=3,
                             padding=1,
-                            padding_mode="replicate",
+                            padding_mode="replicate",  # modified to avoid block artifacts
                             bias=False,
                         ),
                     ),
@@ -94,7 +94,7 @@ class UNet(BaseModel):
                             out_channels=features,
                             kernel_size=3,
                             padding=1,
-                            padding_mode="replicate",
+                            padding_mode="replicate",  # modified to avoid block artifacts
                             bias=False,
                         ),
                     ),
