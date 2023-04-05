@@ -1,39 +1,37 @@
 import os
 import torch
 from PIL import Image
-from torchvision import datasets, transforms
+from torchvision import transforms
 from torch.utils.data import Dataset
 from base import BaseDataLoader
 
 
-# TODO: refactor. No need to have two datasets here
 class DataLoader(BaseDataLoader):
     def __init__(
         self,
         data_dir,
         batch_size,
-        augment: bool = True,
         shuffle=True,
         validation_split=0.0,
         num_workers=1,
         training=True,
     ):
         self.data_dir = data_dir
-        self.dataset = HasselbladDataset(self.data_dir, augment)
+        self.dataset = PatchDataset(self.data_dir, training)
         super().__init__(
             self.dataset, batch_size, shuffle, validation_split, num_workers
         )
 
 
-class HasselbladDataset(Dataset):
-    def __init__(self, data_dir, augment: bool = True):
+class PatchDataset(Dataset):
+    def __init__(self, data_dir, training: bool = True):
         self.transform = transforms.Compose(
             [
                 transforms.RandomHorizontalFlip(),
                 transforms.RandomVerticalFlip(),
             ]
         )
-        self.augment = augment
+        self.training = training
 
         self.to_tensor = transforms.ToTensor()
         self.input_dir = os.path.join(data_dir, "input")
@@ -51,7 +49,7 @@ class HasselbladDataset(Dataset):
         target = Image.open(os.path.join(self.label_dir, self.target[index]))
         target = self.to_tensor(target)
         data = torch.stack([image, target], dim=0)
-        if self.augment:
+        if not self.training:
             data = self.transform(data)
         return data[0], data[1]
 

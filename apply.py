@@ -49,7 +49,6 @@ def main(img_path, config):
 
         data_loader = getattr(module_data, config["data_loader"]["type"])(
             dirname,
-            augment=False,
             batch_size=64,
             shuffle=False,
             validation_split=0.0,
