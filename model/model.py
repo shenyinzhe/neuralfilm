@@ -7,6 +7,10 @@ from collections import OrderedDict
 
 
 class UNet(BaseModel):
+    """
+    From https://github.com/mateuszbuda/brain-segmentation-pytorch by mateuszbuda
+    """
+
     def __init__(self, in_channels=3, out_channels=3, init_features=32):
         super(UNet, self).__init__()
 

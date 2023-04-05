@@ -1,5 +1,5 @@
 {
-    "name": "NC_split",
+    "name": "neuralfilm",
     "n_gpu": 1,
 
     "arch": {
@@ -9,7 +9,7 @@
     "data_loader": {
         "type": "DataLoader",
         "args":{
-            "data_dir": "data/Fujifilm_NC_split",
+            "data_dir": "data/<your_dataset_split>",
             "batch_size": 128,
             "shuffle": true,
             "validation_split": 0.2,
@@ -35,14 +35,14 @@
         }
     },
     "trainer": {
-        "epochs": 100,
+        "epochs": 10,
 
         "save_dir": "saved/",
         "save_period": 1,
         "verbosity": 2,
         
         "monitor": "min val_loss",
-        "early_stop": 10,
+        "early_stop": 5,
 
         "tensorboard": true
     }
