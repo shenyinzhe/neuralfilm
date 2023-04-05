@@ -49,7 +49,7 @@ class PatchDataset(Dataset):
         target = Image.open(os.path.join(self.label_dir, self.target[index]))
         target = self.to_tensor(target)
         data = torch.stack([image, target], dim=0)
-        if not self.training:
+        if self.training:
             data = self.transform(data)
         return data[0], data[1]
 
