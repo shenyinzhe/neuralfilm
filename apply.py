@@ -4,13 +4,14 @@ import torch
 import numpy as np
 from tqdm import tqdm
 from empatches import EMPatches
+from PIL import Image
 
 import data_loader.data_loaders as module_data
 import model.model as module_arch
 import model.loss as module_loss
 import model.metric as module_metric
 
-from PIL import Image
+
 from parse_config import ConfigParser
 from tempfile import TemporaryDirectory
 from torchvision.utils import save_image
@@ -31,10 +32,9 @@ def main(img_path, config):
         os.mkdir(os.path.join(dirname, "output"))
 
         im = np.array(Image.open(img_path))
-        # TODO: So far the model is trained with 112x112 patches. Config it in the future
-        patch_length = 224
+
         emp = EMPatches()
-        im, indices = emp.extract_patches(im, patchsize=patch_length, overlap=0.1)
+        im, indices = emp.extract_patches(im, patchsize=224, overlap=0.1)
         im = np.stack(im, axis=0)
         counter = 0
         for patch in im:
