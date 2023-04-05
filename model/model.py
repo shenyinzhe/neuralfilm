@@ -5,6 +5,7 @@ import torch.nn.functional as F
 from base import BaseModel
 from collections import OrderedDict
 
+
 class UNet(BaseModel):
     def __init__(self, in_channels=3, out_channels=3, init_features=32):
         super(UNet, self).__init__()

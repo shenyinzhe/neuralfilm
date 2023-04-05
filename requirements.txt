@@ -6,3 +6,4 @@ tensorboard
 empatches
 pandas
 scikit-image
+pre-commit
