@@ -1,5 +1,6 @@
 import argparse
 import os
+import shutil
 import torch
 import numpy as np
 from tqdm import tqdm
@@ -28,7 +29,6 @@ def main(img_path, config):
     with TemporaryDirectory() as dirname:
         # make dirs needed in following operations
         os.mkdir(os.path.join(dirname, "input"))
-        os.mkdir(os.path.join(dirname, "label"))
         os.mkdir(os.path.join(dirname, "output"))
 
         im = np.array(Image.open(img_path))
@@ -41,11 +41,8 @@ def main(img_path, config):
             patch = Image.fromarray(patch)
             patch.save(os.path.join(dirname, "input", f"{counter}.jpg"))
             counter += 1
-        # TODO: refactor. Here I repeat input data in the label folder, just to reuse the standard dataloader
-        for patch in im:
-            patch = Image.fromarray(patch)
-            patch.save(os.path.join(dirname, "label", f"{counter}.jpg"))
-            counter += 1
+        # repeat input data in the label folder, just to reuse the standard dataloader
+        shutil.copytree(os.path.join(dirname, "input"), os.path.join(dirname, "label"))
 
         data_loader = getattr(module_data, config["data_loader"]["type"])(
             dirname,
@@ -59,10 +56,6 @@ def main(img_path, config):
         # build model architecture
         model = config.init_obj("arch", module_arch)
 
-        # get function handles of loss and metrics
-        loss_fn = getattr(module_loss, config["loss"])
-        metric_fns = [getattr(module_metric, met) for met in config["metrics"]]
-
         checkpoint = torch.load(config.resume)
         state_dict = checkpoint["state_dict"]
         if config["n_gpu"] > 1:
@@ -73,9 +66,6 @@ def main(img_path, config):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         model = model.to(device)
         model.eval()
-
-        total_loss = 0.0
-        total_metrics = torch.zeros(len(metric_fns))
 
         with torch.no_grad():
             for i, (data, target) in enumerate(tqdm(data_loader)):
@@ -89,16 +79,6 @@ def main(img_path, config):
                         output[j], os.path.join(dirname, "output", f"{counter}.jpg")
                     )
                     counter += 1
-
-                # computing loss, metrics on test set
-                loss = loss_fn(output, target)
-                batch_size = data.shape[0]
-                total_loss += loss.item() * batch_size
-                for i, metric in enumerate(metric_fns):
-                    total_metrics[i] += metric(output, target) * batch_size
-
-        n_samples = len(data_loader.sampler)
-        print("average loss:", total_loss / n_samples)
 
         # read the patches as a numpy array
         patches = sorted(
