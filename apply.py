@@ -32,6 +32,7 @@ def main(img_path, config):
         im = np.array(Image.open(img_path))
 
         emp = EMPatches()
+        print("Splitting the image into patches...")
         im, indices = emp.extract_patches(im, patchsize=224, overlap=0.1)
         im = np.stack(im, axis=0)
         counter = 0
@@ -66,6 +67,7 @@ def main(img_path, config):
         model.eval()
 
         with torch.no_grad():
+            print("Applying the filter")
             for i, (data, target) in enumerate(tqdm(data_loader)):
                 data, target = data.to(device), target.to(device)
                 output = model(data)
@@ -90,11 +92,16 @@ def main(img_path, config):
         patches_np = np.stack(patches_np)
 
     # recover the image from patches
+    print("Merging patches...")
     img = emp.merge_patches(patches_np, indices, mode="avg").astype(np.uint8)
     img = Image.fromarray(img)
     dirname = os.path.dirname(img_path)
     filename = os.path.basename(img_path).split(".")[0]
     img.save(os.path.join(dirname, filename + "_applied.jpg"))
+    print(
+        "The output image is saved in:",
+        os.path.join(dirname, filename + "_applied.jpg"),
+    )
 
 
 if __name__ == "__main__":
