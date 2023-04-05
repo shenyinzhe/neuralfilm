@@ -3,61 +3,7 @@ import os
 import numpy as np
 from tqdm import tqdm
 from PIL import Image
-
-
-# TODO: use empatches
-def col2image(coldata, imsize, stride):
-    """
-    https://zhuanlan.zhihu.com/p/39361808
-    """
-    patch_size = coldata.shape[1:3]
-    res = np.zeros((imsize[0], imsize[1], 3))
-    w = np.zeros((imsize[0], imsize[1], 3))
-    range_y = np.arange(0, imsize[0] - patch_size[0], stride)
-    range_x = np.arange(0, imsize[1] - patch_size[1], stride)
-    if range_y[-1] != imsize[0] - patch_size[0]:
-        range_y = np.append(range_y, imsize[0] - patch_size[0])
-    if range_x[-1] != imsize[1] - patch_size[1]:
-        range_x = np.append(range_x, imsize[1] - patch_size[1])
-    index = 0
-    for y in range_y:
-        for x in range_x:
-            res[y : y + patch_size[0], x : x + patch_size[1]] = (
-                res[y : y + patch_size[0], x : x + patch_size[1]] + coldata[index]
-            )
-            w[y : y + patch_size[0], x : x + patch_size[1]] = (
-                w[y : y + patch_size[0], x : x + patch_size[1]] + 1
-            )
-            index = index + 1
-
-    return res / w
-
-
-def image2cols(image: np.array, patch_size: list, stride: int):
-    """
-    https://zhuanlan.zhihu.com/p/39361808
-    """
-    imhigh, imwidth, imch = image.shape
-
-    # patch indexes
-    range_y = np.arange(0, imhigh - patch_size[0], stride)
-    range_x = np.arange(0, imwidth - patch_size[1], stride)
-    if range_y[-1] != imhigh - patch_size[0]:
-        range_y = np.append(range_y, imhigh - patch_size[0])
-    if range_x[-1] != imwidth - patch_size[1]:
-        range_x = np.append(range_x, imwidth - patch_size[1])
-    sz = len(range_y) * len(range_x)  # number of patches
-
-    res = np.zeros((sz, patch_size[0], patch_size[1], imch))
-
-    index = 0
-    for y in range_y:
-        for x in range_x:
-            patch = image[y : y + patch_size[0], x : x + patch_size[1]]
-            res[index] = patch
-            index = index + 1
-
-    return res.astype(np.uint8)
+from empatches import EMPatches
 
 
 def main(data_dir: str, size: int):
@@ -78,10 +24,12 @@ def main(data_dir: str, size: int):
     else:
         raise RuntimeError("Dataset exists")
 
+    emp = EMPatches()
     counter = 1
     for i in tqdm(images):
         im = np.array(Image.open(os.path.join(input_dir, i)))
-        im = image2cols(im, [size, size], size)
+        im, indices = emp.extract_patches(im, patchsize=size, overlap=0)
+        im = np.stack(im, axis=0)
         for j in im:
             patch = Image.fromarray(j)
             patch.save(os.path.join(new_data_dir, "input", f"{counter}.jpg"))
@@ -90,7 +38,8 @@ def main(data_dir: str, size: int):
     counter = 1
     for i in tqdm(target):
         im = np.array(Image.open(os.path.join(label_dir, i)))
-        im = image2cols(im, [size, size], size)
+        im, indices = emp.extract_patches(im, patchsize=size, overlap=0)
+        im = np.stack(im, axis=0)
         for j in im:
             patch = Image.fromarray(j)
             patch.save(os.path.join(new_data_dir, "label", f"{counter}.jpg"))
